@@ -10,4 +10,5 @@ Introduction to Computer Science-Final Project
 - creation of the initial board
 - display level and lives
 
-
+30/11 John:
+-Update Sound effects
