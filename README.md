@@ -12,3 +12,6 @@ Introduction to Computer Science-Final Project
 
 30/11 John:
 -Update Sound effects
+
+5/12 Mathilde:
+- improvements on the initial board (images and tiles)
