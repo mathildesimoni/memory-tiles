@@ -11,7 +11,12 @@ Introduction to Computer Science-Final Project
 - display level and lives
 
 30/11 John:
--Update Sound effects
+- Update Sound effects
 
 5/12 Mathilde:
 - improvements on the initial board (images and tiles)
+
+6/12 Mathilde:
+- display randomly white squares on the board during 1.25 sec
+
+
