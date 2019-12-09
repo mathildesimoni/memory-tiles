@@ -19,4 +19,10 @@ Introduction to Computer Science-Final Project
 6/12 Mathilde:
 - display randomly white squares on the board during 1.25 sec
 
+9/12 John and Mathilde:
+- display a white square if the player clicked on a correct square
+- display a cross if the player clicked on an incorrect square
+- the function check_conditions()
+
+
 
