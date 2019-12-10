@@ -90,17 +90,19 @@ class Game:
         self.count_correct=0
         self.count_incorrect=0
         self.end_game=False
+        self.refresh=False
         
     def check_tile(self):
         for tile in self.random_tiles:  
             if self.board.board[tile[0]][tile[1]].y<mouseY<self.board.board[tile[0]][tile[1]].y+self.board.board[tile[0]][tile[1]].size:
                 if self.board.board[tile[0]][tile[1]].x<mouseX<self.board.board[tile[0]][tile[1]].x+self.board.board[tile[0]][tile[1]].size:
-                    self.tile_clicked_row=tile[0]
-                    self.tile_clicked_col=tile[1]
-                    return True
+                    if self.board.board[tile[0]][tile[1]]._color==TILES_COLOR:
+                        self.tile_clicked_row=tile[0]
+                        self.tile_clicked_col=tile[1]
+                        return True
         for row in self.board.board:
             for el in row:
-                if el.y<mouseY<el.y+el.size and  el.x<mouseX<el.x+el.size:
+                if el.y<mouseY<el.y+el.size and el.x<mouseX<el.x+el.size and el._color==TILES_COLOR:
                     self.tile_clicked_row=self.board.board.index(row)
                     self.tile_clicked_col=self.board.board[self.board.board.index(row)].index(el)     
                     return False    
@@ -112,8 +114,9 @@ class Game:
         # check check that the player didn't click on more than 3 wrong squares
         # check the number of lives
         # => call update board
-        if self.life==0:
+        if self.life==1 and self.count_incorrect==3:
             self.end_game=True
+            # self.computer_turn=True
         else:
             if self.count_correct==self.number_tiles_displayed:
                 self.refresh_sound.rewind()
@@ -166,18 +169,21 @@ class Game:
         text('DIFFICULT', 400, 355)
     
     def endBoard(self):
-        background(0)
+        fill(0)
+        rect(125,150,400,150)
         fill(250)
         textSize(30)
-        text('GAME OVER', 200, 200)
         text("Level: "+str(self.level-1), 50, 50)
+        textSize(50)
+        text('GAME OVER', 200, 200)
+        text('click to restart', 150, 250)
        
     def display(self):
         if self.start: # display the initial board, ask the player to choose the mode
             self.initialization()
         elif self.end_game:
-            print('end')
             self.endBoard()
+            self.player_turn=False
         else:
             self.board.display()
             fill(250)
@@ -220,11 +226,13 @@ class Game:
 
 g=Game()
 pause=False
+refresh=False
 
 def setup():
     size(BOARD_DIMENSION,BOARD_DIMENSION+65)
     background(0)
-    
+    frameRate(200)
+
 def draw():
     global pause
     if pause:
@@ -232,33 +240,66 @@ def draw():
         g.computer_turn=False
         g.player_turn=True
         pause=False
-    background(40)
-    g.check_conditions()
-    g.display()
-    if g.computer_turn:
+    if g.refresh:
+        delay(1000)
+        g.refresh=False
+        background(40)
         g.display_tiles()
         pause=True
+    else:
+        if not g.end_game:
+            background(40)
+        g.display()
+        g.check_conditions()
+        if g.computer_turn:
+            g.refresh=True
         
+        
+
 def mouseClicked():
     if g.start:
-        g.computer_turn=True
+        # g.computer_turn=True
+        # beginning=True
         if 320<mouseY<370:
             if 30<mouseX<200: 
                 # mode easy
                 g.time_constraint=5 # the player has 5 sec for the first level and it increases by 1 for each level
                 g.start=False
+                g.computer_turn=True
             if 210<mouseX<380:
                 # mode normal
                 g.time_constraint=3 # the player has 3 sec for the first level and it increases by 1 for each level
                 g.start=False
+                g.computer_turn=True
             if 390<mouseX<560:
                 # mode difficult
                 g.time_constraint=1 # the player has 1 sec for the first level and it increases by 1 for each level
                 g.start=False
-    else:
-        if g.player_turn:
-            g.update()
-            
-        
-
+                g.computer_turn=True
+    elif g.player_turn:
+        g.update()
+    elif g.end_game:
+        g.__init__()
+                        
+# TO DO
+# game over screen (personalize)
+# time constraint + color depends on time
+# 
     
+# def draw():
+#     if g.refresh:
+#         delay(2000)
+#         g.refresh=False
+#     else:
+#         global pause
+#         if pause:
+#             delay(1250)
+#             g.computer_turn=False
+#             g.player_turn=True
+#             pause=False
+#         background(40)
+#         g.check_conditions()
+#         g.display()
+#         if g.computer_turn:
+#             g.display_tiles()
+#             pause=True    
