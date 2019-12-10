@@ -24,5 +24,9 @@ Introduction to Computer Science-Final Project
 - display a cross if the player clicked on an incorrect square
 - the function check_conditions()
 
+10/12 Mathilde:
+- checking of all the conditions to change level, loose a life, or end the game
+- update the board after the player's input
+
 
 
