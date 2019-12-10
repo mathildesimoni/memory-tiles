@@ -1,4 +1,5 @@
 # Memory Tiles game
+
 BOARD_DIMENSION=600
 TILES_COLOR=[0,128,200]
 add_library('minim')
@@ -16,6 +17,7 @@ class Tile:
 class Board:
     def __init__(self):
         self.num_row=3 # the initial board is 3x3
+        self.cross=loadImage(path+'images/'+'cross.png')
         self.board=[] # the list which represents the board
         for row in range(self.num_row):
             rowlist=[]
@@ -25,14 +27,33 @@ class Board:
                                ((BOARD_DIMENSION-20)/self.num_row)-((5*(self.num_row-1))/self.num_row),
                                TILES_COLOR))
             self.board.append(rowlist)
-        self.cross=loadImage(path+'images/'+'cross.png')
-            
+        
     def update(self, choice, row, col): # update the board 
         if choice=='correct':
             self.board[int(row)][int(col)]._color=[255,255,255]
         elif choice=='incorrect':
             self.board[int(row)][int(col)]._color='image'
-            
+        elif choice=='same_board':
+            self.board=[]
+            for row in range(self.num_row):
+                rowlist=[]
+                for col in range(self.num_row):
+                    rowlist.append(Tile(10+(((BOARD_DIMENSION-20)/self.num_row)-((5*(self.num_row-1))/self.num_row))*col+5*col,
+                                75+(((BOARD_DIMENSION-20)/self.num_row)-((5*(self.num_row-1))/self.num_row))*row+5*row,
+                                ((BOARD_DIMENSION-20)/self.num_row)-((5*(self.num_row-1))/self.num_row),
+                                TILES_COLOR))
+                self.board.append(rowlist)
+        elif choice=='new_board':
+            self.num_row+=1
+            self.board=[]
+            for row in range(self.num_row):
+                rowlist=[]
+                for col in range(self.num_row):
+                    rowlist.append(Tile(10+(((BOARD_DIMENSION-20)/self.num_row)-((5*(self.num_row-1))/self.num_row))*col+5*col,
+                                75+(((BOARD_DIMENSION-20)/self.num_row)-((5*(self.num_row-1))/self.num_row))*row+5*row,
+                                ((BOARD_DIMENSION-20)/self.num_row)-((5*(self.num_row-1))/self.num_row),
+                                TILES_COLOR))
+                self.board.append(rowlist)
             
     def display(self): # display the board
         for row in self.board:
@@ -66,6 +87,9 @@ class Game:
         self.correct_tile_sound=player.loadFile(path + 'SoundEffects/correct_tile.mp3')
         self.refresh_sound=player.loadFile(path + "SoundEffects/refresh.mp3")
         self.times_up_sound=player.loadFile(path + "SoundEffects/times_up.mp3")
+        self.count_correct=0
+        self.count_incorrect=0
+        self.end_game=False
         
     def check_tile(self):
         for tile in self.random_tiles:  
@@ -78,31 +102,52 @@ class Game:
             for el in row:
                 if el.y<mouseY<el.y+el.size and  el.x<mouseX<el.x+el.size:
                     self.tile_clicked_row=self.board.board.index(row)
-                    self.tile_clicked_col=self.board.board[self.board.board.index(row)].index(el)      
-                    return False
+                    self.tile_clicked_col=self.board.board[self.board.board.index(row)].index(el)     
+                    return False    
         return 'no_tile'
     
-    # def check_conditions(self):
-        # check time constraint
+    def check_conditions(self):
+        # check time constraint (TO DO)
         # check if the player has completed the level of not
         # check check that the player didn't click on more than 3 wrong squares
         # check the number of lives
         # => call update board
-            
+        if self.life==0:
+            self.end_game=True
+        else:
+            if self.count_correct==self.number_tiles_displayed:
+                self.refresh_sound.rewind()
+                self.refresh_sound.play()
+                if self.level%2==1:
+                    self.board.update('same_board',0,0)
+                else:
+                    self.board.update('new_board',0,0)
+                self.count_incorrect=0
+                self.count_correct=0
+                self.level+=1
+                self.computer_turn=True
+                
+            if self.count_incorrect==3:
+                self.life-=1
+                self.board.update('same_board',0,0)
+                self.count_incorrect=0
+                self.count_correct=0
+                self.computer_turn=True
+        
     def update(self):
-        if self.check_tile():
-            self.board.update('correct', self.tile_clicked_row, self.tile_clicked_col)
-            self.correct_tile_sound.rewind()
-            self.correct_tile_sound.play()
-        
-        elif not self.check_tile():
-            self.board.update('incorrect', self.tile_clicked_row, self.tile_clicked_col)
-            self.wrong_tile_sound.rewind()
-            self.wrong_tile_sound.play()
-        elif self.check_tile()=='no_tile':
-            None
-        
-        
+        if self.check_tile()!='no_tile':
+            if self.check_tile():
+                self.board.update('correct', self.tile_clicked_row, self.tile_clicked_col)
+                self.count_correct+=1
+                self.correct_tile_sound.rewind()
+                self.correct_tile_sound.play()
+            
+            elif not self.check_tile():
+                self.board.update('incorrect', self.tile_clicked_row, self.tile_clicked_col)
+                self.count_incorrect+=1
+                self.wrong_tile_sound.rewind()
+                self.wrong_tile_sound.play()
+            
     def initialization(self):
         background(0)
         image(self.img1,200,275)
@@ -119,11 +164,20 @@ class Game:
         text('EASY', 80, 355)
         text('NORMAL', 230, 355)
         text('DIFFICULT', 400, 355)
-        
-         
+    
+    def endBoard(self):
+        background(0)
+        fill(250)
+        textSize(30)
+        text('GAME OVER', 200, 200)
+        text("Level: "+str(self.level-1), 50, 50)
+       
     def display(self):
         if self.start: # display the initial board, ask the player to choose the mode
             self.initialization()
+        elif self.end_game:
+            print('end')
+            self.endBoard()
         else:
             self.board.display()
             fill(250)
@@ -179,8 +233,8 @@ def draw():
         g.player_turn=True
         pause=False
     background(40)
+    g.check_conditions()
     g.display()
-    # g.check_conditions()
     if g.computer_turn:
         g.display_tiles()
         pause=True
