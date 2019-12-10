@@ -1,7 +1,8 @@
 # Memory Tiles game
 BOARD_DIMENSION=600
 TILES_COLOR=[0,128,200]
-# add_library('minim')
+add_library('minim')
+player = Minim(this)
 import time, random
 path = os.getcwd() + "/"
 
@@ -14,7 +15,7 @@ class Tile:
         
 class Board:
     def __init__(self):
-        self.num_row=5 # the initial board is 3x3
+        self.num_row=3 # the initial board is 3x3
         self.board=[] # the list which represents the board
         for row in range(self.num_row):
             rowlist=[]
@@ -31,6 +32,7 @@ class Board:
             self.board[int(row)][int(col)]._color=[255,255,255]
         elif choice=='incorrect':
             self.board[int(row)][int(col)]._color='image'
+            
             
     def display(self): # display the board
         for row in self.board:
@@ -60,7 +62,10 @@ class Game:
         self.number_tiles_displayed=None # number of white tiles the program displays randomly
         self.tile_clicked_row=None       # keep in memory the row of the last tile the player clicked
         self.tile_clicked_col=None       # keep in memory the column of the last tile the player clicked
-        
+        self.wrong_tile_sound=player.loadFile(path +'SoundEffects/wrong_tile.mp3')
+        self.correct_tile_sound=player.loadFile(path + 'SoundEffects/correct_tile.mp3')
+        self.refresh_sound=player.loadFile(path + "SoundEffects/refresh.mp3")
+        self.times_up_sound=player.loadFile(path + "SoundEffects/times_up.mp3")
         
     def check_tile(self):
         for tile in self.random_tiles:  
@@ -87,8 +92,13 @@ class Game:
     def update(self):
         if self.check_tile():
             self.board.update('correct', self.tile_clicked_row, self.tile_clicked_col)
+            self.correct_tile_sound.rewind()
+            self.correct_tile_sound.play()
+        
         elif not self.check_tile():
             self.board.update('incorrect', self.tile_clicked_row, self.tile_clicked_col)
+            self.wrong_tile_sound.rewind()
+            self.wrong_tile_sound.play()
         elif self.check_tile()=='no_tile':
             None
         
