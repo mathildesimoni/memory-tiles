@@ -28,5 +28,10 @@ Introduction to Computer Science-Final Project
 - checking of all the conditions to change level, loose a life, or end the game
 - update the board after the player's input
 
+12/12 John and Mathilde:
+- improvements of the draw function so that the player can't click and update the board when the progran displays the white tiles (during 1.25sec)
+
+
+
 
 

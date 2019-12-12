@@ -78,7 +78,6 @@ class Game:
         self.img2=loadImage(path+'images/'+'bulb.png')
         self.random_tiles=[]
         self.time_constraint=None # depends om the mode
-        self.player_turn=False
         self.computer_turn=False
         self.number_tiles_displayed=None # number of white tiles the program displays randomly
         self.tile_clicked_row=None       # keep in memory the row of the last tile the player clicked
@@ -177,13 +176,14 @@ class Game:
         textSize(50)
         text('GAME OVER', 200, 200)
         text('click to restart', 150, 250)
+        
        
     def display(self):
         if self.start: # display the initial board, ask the player to choose the mode
             self.initialization()
         elif self.end_game:
             self.endBoard()
-            self.player_turn=False
+            self.computer_turn=True
         else:
             self.board.display()
             fill(250)
@@ -226,6 +226,7 @@ class Game:
 
 g=Game()
 pause=False
+checking=False
 refresh=False
 
 def setup():
@@ -234,15 +235,17 @@ def setup():
     frameRate(200)
 
 def draw():
-    global pause
-    if pause:
-        delay(1250)
+    global pause, refresh, checking
+    if checking:
         g.computer_turn=False
-        g.player_turn=True
+        checking=False
+    elif pause:
+        delay(1250)
         pause=False
-    if g.refresh:
+        checking=True
+    elif refresh:
         delay(1000)
-        g.refresh=False
+        refresh=False
         background(40)
         g.display_tiles()
         pause=True
@@ -251,15 +254,11 @@ def draw():
             background(40)
         g.display()
         g.check_conditions()
-        if g.computer_turn:
-            g.refresh=True
+        if g.computer_turn and not g.end_game:
+            refresh=True
         
-        
-
 def mouseClicked():
     if g.start:
-        # g.computer_turn=True
-        # beginning=True
         if 320<mouseY<370:
             if 30<mouseX<200: 
                 # mode easy
@@ -276,7 +275,7 @@ def mouseClicked():
                 g.time_constraint=1 # the player has 1 sec for the first level and it increases by 1 for each level
                 g.start=False
                 g.computer_turn=True
-    elif g.player_turn:
+    elif not g.computer_turn:
         g.update()
     elif g.end_game:
         g.__init__()
@@ -284,22 +283,3 @@ def mouseClicked():
 # TO DO
 # game over screen (personalize)
 # time constraint + color depends on time
-# 
-    
-# def draw():
-#     if g.refresh:
-#         delay(2000)
-#         g.refresh=False
-#     else:
-#         global pause
-#         if pause:
-#             delay(1250)
-#             g.computer_turn=False
-#             g.player_turn=True
-#             pause=False
-#         background(40)
-#         g.check_conditions()
-#         g.display()
-#         if g.computer_turn:
-#             g.display_tiles()
-#             pause=True    
