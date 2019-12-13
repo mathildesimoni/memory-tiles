@@ -1,5 +1,5 @@
 # Memory Tiles game
-
+# Board dimension has to be > 600 in order to play correctly
 BOARD_DIMENSION=600
 TILES_COLOR=[0,128,200]
 add_library('minim')
@@ -141,8 +141,9 @@ class Game:
             if self.check_tile():
                 self.board.update('correct', self.tile_clicked_row, self.tile_clicked_col)
                 self.count_correct+=1
-                self.correct_tile_sound.rewind()
-                self.correct_tile_sound.play()
+                if self.count_correct != self.number_tiles_displayed:
+                    self.correct_tile_sound.rewind()
+                    self.correct_tile_sound.play()
             
             elif not self.check_tile():
                 self.board.update('incorrect', self.tile_clicked_row, self.tile_clicked_col)
@@ -152,30 +153,36 @@ class Game:
             
     def initialization(self):
         background(0)
-        image(self.img1,200,275)
-        image(self.img2,5,15,125,125)
+        image(self.img1,BOARD_DIMENSION/3,BOARD_DIMENSION/2.2)
+        image(self.img2,5,15,BOARD_DIMENSION/5,BOARD_DIMENSION/5)
         fill(255)
-        textSize(50)
-        text('Memory Tiles',130,200)
+        textSize(BOARD_DIMENSION/12)
+        text('Memory Tiles',BOARD_DIMENSION/4.5,BOARD_DIMENSION/3)
         textSize(30)
-        text('Choose the mode: ',160,250)
-        rect(30, 320, 170, 50,10)
-        rect(210, 320, 170, 50,10)
-        rect(390, 320, 170, 50,10)
+        text('Choose the mode: ',BOARD_DIMENSION/3.75,BOARD_DIMENSION/2.4)
+        rect(BOARD_DIMENSION/20, BOARD_DIMENSION/1.9, 170, 50,10)
+        rect(BOARD_DIMENSION/2.85, BOARD_DIMENSION/1.9, 170, 50,10)
+        rect(BOARD_DIMENSION/1.55, BOARD_DIMENSION/1.9, 170, 50,10)
         fill(0)
-        text('EASY', 80, 355)
-        text('NORMAL', 230, 355)
-        text('DIFFICULT', 400, 355)
+        text('EASY', BOARD_DIMENSION/20+43, BOARD_DIMENSION/1.9+38)
+        text('NORMAL', BOARD_DIMENSION/2.9+22, BOARD_DIMENSION/1.9+38)
+        text('DIFFICULT',BOARD_DIMENSION/1.55+6, BOARD_DIMENSION/1.9+38)
     
     def endBoard(self):
+        fill(40)
+        noStroke()
+        rect(0,0,BOARD_DIMENSION, 75)
         fill(0)
-        rect(125,150,400,150)
+        stroke(255)
+        strokeWeight(3)
+        rect(BOARD_DIMENSION/6,BOARD_DIMENSION/4,BOARD_DIMENSION/1.5,BOARD_DIMENSION/3)
         fill(250)
-        textSize(30)
-        text("Level: "+str(self.level-1), 50, 50)
-        textSize(50)
-        text('GAME OVER', 200, 200)
-        text('click to restart', 150, 250)
+        textSize(BOARD_DIMENSION/12)
+        text('GAME OVER',BOARD_DIMENSION/4.15,BOARD_DIMENSION/2.75)
+        textSize(BOARD_DIMENSION/20)
+        text("Level: "+str(self.level-1),BOARD_DIMENSION/2.5, BOARD_DIMENSION/2.30)
+        textSize(BOARD_DIMENSION/18)
+        text('click to restart', BOARD_DIMENSION/3.3, BOARD_DIMENSION/2)
         
        
     def display(self):
@@ -232,7 +239,9 @@ refresh=False
 def setup():
     size(BOARD_DIMENSION,BOARD_DIMENSION+65)
     background(0)
-    frameRate(200)
+    myFont = createFont("Georgia", 16)
+    textFont(myFont)
+
 
 def draw():
     global pause, refresh, checking
@@ -259,18 +268,18 @@ def draw():
         
 def mouseClicked():
     if g.start:
-        if 320<mouseY<370:
-            if 30<mouseX<200: 
+        if BOARD_DIMENSION/1.9<mouseY<BOARD_DIMENSION/1.9+50:
+            if BOARD_DIMENSION/20<mouseX<BOARD_DIMENSION/20+170: 
                 # mode easy
                 g.time_constraint=5 # the player has 5 sec for the first level and it increases by 1 for each level
                 g.start=False
                 g.computer_turn=True
-            if 210<mouseX<380:
+            if BOARD_DIMENSION/2.85<mouseX<BOARD_DIMENSION/2.85+170:
                 # mode normal
                 g.time_constraint=3 # the player has 3 sec for the first level and it increases by 1 for each level
                 g.start=False
                 g.computer_turn=True
-            if 390<mouseX<560:
+            if BOARD_DIMENSION/1.55<mouseX<BOARD_DIMENSION/1.55+170:
                 # mode difficult
                 g.time_constraint=1 # the player has 1 sec for the first level and it increases by 1 for each level
                 g.start=False
@@ -281,5 +290,5 @@ def mouseClicked():
         g.__init__()
                         
 # TO DO
-# game over screen (personalize)
+
 # time constraint + color depends on time
