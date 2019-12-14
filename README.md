@@ -35,6 +35,10 @@ Introduction to Computer Science-Final Project
 - initial and end board changes
 - time constraint and changes in color (tiles)
 
+12/14 Mathilde and John:
+- display rules
+- final changes
+
 
 
 
