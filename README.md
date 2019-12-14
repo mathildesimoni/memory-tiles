@@ -31,7 +31,7 @@ Introduction to Computer Science-Final Project
 12/12 John and Mathilde:
 - improvements of the draw function so that the player can't click and update the board when the progran displays the white tiles (during 1.25sec)
 
-12/13 Mathilde et John:
+12/13 Mathilde and John:
 - initial and end board changes
 - time constraint and changes in color (tiles)
 
